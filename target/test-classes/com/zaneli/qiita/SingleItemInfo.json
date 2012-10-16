@@ -1,0 +1,25 @@
+{"id": 1,
+ "uuid": "1a43e55e7209c8f3c565",
+ "user":
+  {"name": "Hiroshige Umino",
+   "url_name": "yaotti",
+   "profile_image_url": "https://si0.twimg.com/profile_images/2309761038/1ijg13pfs0dg84sk2y0h_normal" },
+ "title": "てすと",
+ "body": "<p>foooooooooooooooo</p>\n",
+ "created_at": "2012-10-03 22:12:36 +0900",
+ "updated_at": "2012-10-03 22:12:36 +0900",
+ "created_at_in_words": "18 hours ago",
+ "updated_at_in_words": "18 hours ago",
+ "tags":
+  [{"name": "FOOBAR",
+    "url_name": "FOOBAR",
+    "icon_url": "http://qiita.com/icons/thumb/missing.png",
+    "versions": ['1.2', '1.3']}],
+ "stock_count": 0,
+ "stock_users": [],
+ "comment_count": 0,
+ "url": "http://qiita.com/items/1a43e55e7209c8f3c565",
+ "gist_url": null,
+ "private": false,
+ "stocked": false
+}

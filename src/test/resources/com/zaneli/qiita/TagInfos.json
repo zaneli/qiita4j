@@ -1,0 +1,24 @@
+[{
+  "name": "Java",
+  "url_name": "Java",
+  "icon_url": "http://qiita.com/system/tags/icons/000/000/002/thumb/Java-Runtime-Environment-V6.0.260.png?1316130938",
+  "item_count": 157,
+  "follower_count": 1994,
+  "following": true
+ },
+ {
+  "name": "Python",
+  "url_name": "Python",
+  "icon_url": "http://qiita.com/system/tags/icons/000/000/004/thumb/search.gif?1316130880",
+  "item_count": 213,
+  "follower_count": 1554,
+  "following": true
+ },
+ {
+  "name": "Haskell",
+  "url_name": "Haskell",
+  "icon_url": "http://qiita.com/system/tags/icons/000/000/017/thumb/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB:Haskell-Logo.png?1316130328",
+  "item_count": 117,
+  "follower_count": 645,
+  "following": false
+ }]

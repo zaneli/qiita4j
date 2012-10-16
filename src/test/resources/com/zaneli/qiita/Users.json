@@ -1,0 +1,12 @@
+[{"name": "Dummy User1",
+ "url_name": "dummy1",
+ "profile_image_url": "https://si0.twimg.com/profile_images/dummy_url1.jpeg",
+ },
+ {"name": "Dummy User2",
+ "url_name": "dummy2",
+ "profile_image_url": "https://si0.twimg.com/profile_images/dummy_url2.jpeg",
+ },
+ {"name": "Dummy User3",
+ "url_name": "dummy3",
+ "profile_image_url": "https://si0.twimg.com/profile_images/dummy_url3.jpeg",
+}]
