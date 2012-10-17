@@ -1,6 +1,7 @@
 package com.zaneli.qiita.model.response;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,9 +14,10 @@ import com.zaneli.qiita.QiitaException;
 import com.zaneli.qiita.QiitaExecutor;
 import com.zaneli.qiita.model.response.QiitaResponse;
 
-public class PageableResponse<T extends QiitaResponse> {
+@SuppressWarnings("serial")
+public class PageableResponse<T extends QiitaResponse> implements Serializable {
 
-  private enum Rel {
+  private static enum Rel {
     FIRST("first"), PREV("prev"), NEXT("next"), LAST("last");
     private final String value;
     private Rel(String value) {
@@ -25,60 +27,58 @@ public class PageableResponse<T extends QiitaResponse> {
 
   private final QiitaExecutor executor;
   private final Map<String, String> params;
+  private final Class<T> responseType;
   private final T[] contents;
-  private final URI firstUrl;
-  private final URI prevUrl;
-  private final URI nextUrl;
-  private final URI lastUrl;
+  private final URI firstUri;
+  private final URI prevUri;
+  private final URI nextUri;
+  private final URI lastUri;
 
   public PageableResponse(
-      QiitaExecutor executor, Map<String, String> params, T[] contents, String[] linkHeaderValues) throws QiitaException {
+      QiitaExecutor executor, Map<String, String> params, Class<T> responseType, T[] contents, String[] linkHeaderValues) throws QiitaException {
     this.executor = executor;
     this.params = params;
+    this.responseType = responseType;
     this.contents = contents;
-    this.firstUrl = retrieveUrl(Rel.FIRST, linkHeaderValues);
-    this.prevUrl = retrieveUrl(Rel.PREV, linkHeaderValues);
-    this.nextUrl = retrieveUrl(Rel.NEXT, linkHeaderValues);
-    this.lastUrl = retrieveUrl(Rel.LAST, linkHeaderValues);
+    this.firstUri = retrieveUri(Rel.FIRST, linkHeaderValues);
+    this.prevUri = retrieveUri(Rel.PREV, linkHeaderValues);
+    this.nextUri = retrieveUri(Rel.NEXT, linkHeaderValues);
+    this.lastUri = retrieveUri(Rel.LAST, linkHeaderValues);
   }
 
   public T[] getContents() {
     return contents;
   }
 
-  @SuppressWarnings("unchecked")
   public PageableResponse<T> getFirst() throws IOException, QiitaException {
-    if (firstUrl == null) {
-      return new NullPageableResponse<T>(contents);
+    if (firstUri == null) {
+      return new NullPageableResponse<T>(responseType, contents);
     }
-    return executor.getPageableContents(firstUrl, params, (Class<T[]>) contents.getClass());
+    return executor.getPageableContents(firstUri, params, responseType);
   }
 
-  @SuppressWarnings("unchecked")
   public PageableResponse<T> getPrev() throws IOException, QiitaException {
-    if (prevUrl == null) {
-      return new NullPageableResponse<T>(contents);
+    if (prevUri == null) {
+      return new NullPageableResponse<T>(responseType, contents);
     }
-    return executor.getPageableContents(prevUrl, params, (Class<T[]>) contents.getClass());
+    return executor.getPageableContents(prevUri, params, responseType);
   }
 
-  @SuppressWarnings("unchecked")
   public PageableResponse<T> getNext() throws IOException, QiitaException {
-    if (nextUrl == null) {
-      return new NullPageableResponse<T>(contents);
+    if (nextUri == null) {
+      return new NullPageableResponse<T>(responseType, contents);
     }
-    return executor.getPageableContents(nextUrl, params, (Class<T[]>) contents.getClass());
+    return executor.getPageableContents(nextUri, params, responseType);
   }
 
-  @SuppressWarnings("unchecked")
   public PageableResponse<T> getLast() throws IOException, QiitaException {
-    if (lastUrl == null) {
-      return new NullPageableResponse<T>(contents);
+    if (lastUri == null) {
+      return new NullPageableResponse<T>(responseType, contents);
     }
-    return executor.getPageableContents(lastUrl, params, (Class<T[]>) contents.getClass());
+    return executor.getPageableContents(lastUri, params, responseType);
   }
 
-  private static URI retrieveUrl(Rel rel, String[] linkHeaderValues) throws QiitaException {
+  private static URI retrieveUri(Rel rel, String[] linkHeaderValues) throws QiitaException {
     Pattern pattern = Pattern.compile("^<(.+)>;\\s+rel=\"" + rel.value + "\"$");
     for (String linkHeaderValue : linkHeaderValues) {
       String[] splitedLinkHeaderValues = linkHeaderValue.split(",");
@@ -99,9 +99,9 @@ public class PageableResponse<T extends QiitaResponse> {
   private static class NullPageableResponse<T extends QiitaResponse> extends PageableResponse<T> {
     private final T[] emptyContent;
     @SuppressWarnings("unchecked")
-    private NullPageableResponse(T[] orgContents) throws QiitaException {
-      super(null, Collections.<String, String>emptyMap(), null, new String[0]);
-      this.emptyContent = (T[]) Array.newInstance(orgContents[0].getClass(), 0);
+    private NullPageableResponse(Class<T> responseType, T[] orgContents) throws QiitaException {
+      super(null, Collections.<String, String>emptyMap(), responseType, null, new String[0]);
+      this.emptyContent = (T[]) Array.newInstance(responseType, 0);
     }
     @Override
     public T[] getContents() {

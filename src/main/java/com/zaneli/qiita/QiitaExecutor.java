@@ -11,6 +11,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -59,7 +60,7 @@ public class QiitaExecutor {
     this.token = token;
   }
 
-  public void setPerPage(int perPage) {
+  void setPerPage(int perPage) {
     this.perPage = perPage;
   }
 
@@ -79,12 +80,12 @@ public class QiitaExecutor {
   }
 
   <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      String apiPath, Class<T[]> responseType) throws IOException, QiitaException {
+      String apiPath, Class<T> responseType) throws IOException, QiitaException {
     return getPageableContents(apiPath, new HashMap<String, String>(), responseType);
   }
 
   <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      String apiPath, Map<String, String> params, Class<T[]> responseType) throws IOException, QiitaException {
+      String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
     params.put("per_page", Integer.toString(perPage));
     try {
       return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), params, responseType);
@@ -94,14 +95,15 @@ public class QiitaExecutor {
   }
 
   public <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      URI uri, Map<String, String> params, Class<T[]> responseType) throws IOException, QiitaException {
+      URI uri, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
     HttpGet request = new HttpGet(uri);
     HttpResponse response = execute(request);
     verifyStatusCode(response, SC_OK);
     String[] linkHeaderValues = getHeaderValues(response.getHeaders("Link"));
     try (InputStream in = response.getEntity().getContent()) {
-      T[] res = JSON.decode(in, responseType);
-      return new PageableResponse<T>(this, params, res, linkHeaderValues);
+      @SuppressWarnings("unchecked")
+      T[] contents = JSON.decode(in, (Class<T[]>) Array.newInstance(responseType, 0).getClass());
+      return new PageableResponse<T>(this, params, responseType, contents, linkHeaderValues);
     }
   }
 
