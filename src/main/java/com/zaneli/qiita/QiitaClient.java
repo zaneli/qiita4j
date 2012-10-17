@@ -7,6 +7,7 @@ import com.zaneli.qiita.model.request.ItemRequest;
 import com.zaneli.qiita.model.request.SearchRequest;
 import com.zaneli.qiita.model.response.ItemDetail;
 import com.zaneli.qiita.model.response.ItemInfo;
+import com.zaneli.qiita.model.response.PageableResponse;
 import com.zaneli.qiita.model.response.RateLimit;
 import com.zaneli.qiita.model.response.TagInfo;
 import com.zaneli.qiita.model.response.TokenInfo;
@@ -28,56 +29,60 @@ public class QiitaClient {
     executor.setToken(token);
   }
 
+  public void setPerPage(int perPage) {
+    executor.setPerPage(perPage);
+  }
+
   public TokenInfo authorize(AuthRequest req) throws IOException, QiitaException {
     return executor.postFormValue("auth", req.createParams(), TokenInfo.class);
   }
 
   public RateLimit getRateLimit() throws IOException, QiitaException {
-    return executor.getSingleContent("rate_limit", RateLimit.class);
+    return executor.getContent("rate_limit", RateLimit.class);
   }
 
   public UserInfo getOwnInfo() throws IOException, QiitaException {
-    return executor.getSingleContent("user", UserInfo.class);
+    return executor.getContent("user", UserInfo.class);
   }
 
   public UserInfo getUserInfo(String userName) throws IOException, QiitaException {
-    return executor.getSingleContent("users/" + userName, UserInfo.class);
+    return executor.getContent("users/" + userName, UserInfo.class);
   }
 
-  public ItemInfo[] getUserItems(String userName) throws IOException, QiitaException {
-    return executor.getMultiContents("users/" + userName + "/items", ItemInfo[].class);
+  public PageableResponse<ItemInfo> getUserItems(String userName) throws IOException, QiitaException {
+    return executor.getPageableContents("users/" + userName + "/items", ItemInfo[].class);
   }
 
-  public ItemInfo[] getUserStocks(String userName) throws IOException, QiitaException {
-    return executor.getMultiContents("users/" + userName + "/stocks", ItemInfo[].class);
+  public PageableResponse<ItemInfo> getUserStocks(String userName) throws IOException, QiitaException {
+    return executor.getPageableContents("users/" + userName + "/stocks", ItemInfo[].class);
   }
 
-  public User[] getFollowingUsers(String userName) throws IOException, QiitaException {
-    return executor.getMultiContents("users/" + userName + "/following_users", User[].class);
+  public PageableResponse<User> getFollowingUsers(String userName) throws IOException, QiitaException {
+    return executor.getPageableContents("users/" + userName + "/following_users", User[].class);
   }
 
-  public TagInfo[] getFollowingTags(String userName) throws IOException, QiitaException {
-    return executor.getMultiContents("users/" + userName + "/following_tags", TagInfo[].class);
+  public PageableResponse<TagInfo> getFollowingTags(String userName) throws IOException, QiitaException {
+    return executor.getPageableContents("users/" + userName + "/following_tags", TagInfo[].class);
   }
 
-  public ItemInfo[] getTagItems(String tagName) throws IOException, QiitaException {
-    return executor.getMultiContents("tags/" + tagName + "/items", ItemInfo[].class);
+  public PageableResponse<ItemInfo> getTagItems(String tagName) throws IOException, QiitaException {
+    return executor.getPageableContents("tags/" + tagName + "/items", ItemInfo[].class);
   }
 
-  public TagInfo[] getTags() throws IOException, QiitaException {
-    return executor.getMultiContents("tags", TagInfo[].class);
+  public PageableResponse<TagInfo> getTags() throws IOException, QiitaException {
+    return executor.getPageableContents("tags", TagInfo[].class);
   }
 
-  public ItemInfo[] searchItems(SearchRequest req) throws IOException, QiitaException {
-    return executor.getMultiContents("search", req.createParams(), ItemInfo[].class);
+  public PageableResponse<ItemInfo> searchItems(SearchRequest req) throws IOException, QiitaException {
+    return executor.getPageableContents("search", req.createParams(), ItemInfo[].class);
   }
 
-  public ItemInfo[] getNewItems() throws IOException, QiitaException {
-    return executor.getMultiContents("items", ItemInfo[].class);
+  public PageableResponse<ItemInfo> getNewItems() throws IOException, QiitaException {
+    return executor.getPageableContents("items", ItemInfo[].class);
   }
 
-  public ItemInfo[] getOwnStocks() throws IOException, QiitaException {
-    return executor.getMultiContents("stocks", ItemInfo[].class);
+  public PageableResponse<ItemInfo> getOwnStocks() throws IOException, QiitaException {
+    return executor.getPageableContents("stocks", ItemInfo[].class);
   }
 
   public ItemInfo createItem(ItemRequest req) throws IOException, QiitaException {
@@ -93,7 +98,7 @@ public class QiitaClient {
   }
 
   public ItemDetail getSpecificItem(String uuid) throws IOException, QiitaException {
-    return executor.getSingleContent("items/" + uuid, ItemDetail.class);
+    return executor.getContent("items/" + uuid, ItemDetail.class);
   }
 
   public void stockItem(String uuid) throws IOException, QiitaException {

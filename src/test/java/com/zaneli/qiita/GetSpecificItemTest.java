@@ -15,7 +15,6 @@ import com.zaneli.qiita.model.response.Comment;
 import com.zaneli.qiita.model.response.ItemDetail;
 import com.zaneli.qiita.model.response.ItemInfo.Tag;
 import com.zaneli.qiita.model.response.User;
-import com.zaneli.qiita.util.DateTimeUtil;
 
 public class GetSpecificItemTest {
 
@@ -32,8 +31,8 @@ public class GetSpecificItemTest {
     assertEquals("https://si0.twimg.com/profile_images/2309761038/1ijg13pfs0dg84sk2y0h_normal", user.getProfileImageUrl());
     assertEquals("てすと", detail.getTitle());
     assertEquals("<p>foooooooooooooooo</p>\n", detail.getBody());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), detail.getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), detail.getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), detail.getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), detail.getUpdatedAt());
     assertEquals("18 hours ago", detail.getCreatedAtInWords());
     assertEquals("18 hours ago", detail.getUpdatedAtInWords());
     Tag[] tags = detail.getTags();

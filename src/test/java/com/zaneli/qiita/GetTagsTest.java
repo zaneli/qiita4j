@@ -19,7 +19,7 @@ public class GetTagsTest {
   public void タグ一覧取得成功(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "TagInfos.json");
     QiitaClient client = new QiitaClient();
-    TagInfo[] infos = client.getTags();
+    TagInfo[] infos = client.getTags().getContents();
     assertEquals(3, infos.length);
 
     assertEquals("Java", infos[0].getName());

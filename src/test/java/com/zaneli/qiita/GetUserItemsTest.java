@@ -15,7 +15,6 @@ import org.junit.Test;
 import com.zaneli.qiita.model.response.ItemInfo;
 import com.zaneli.qiita.model.response.ItemInfo.Tag;
 import com.zaneli.qiita.model.response.User;
-import com.zaneli.qiita.util.DateTimeUtil;
 
 public class GetUserItemsTest {
 
@@ -23,7 +22,7 @@ public class GetUserItemsTest {
   public void 特定ユーザーの投稿取得成功_1件(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "ItemInfo.json");
     QiitaClient client = new QiitaClient();
-    ItemInfo[] infos = client.getUserItems("yaotti");
+    ItemInfo[] infos = client.getUserItems("yaotti").getContents();
     assertEquals(1, infos.length);
     assertEquals(1, infos[0].getId());
     assertEquals("1a43e55e7209c8f3c565", infos[0].getUuid());
@@ -33,8 +32,8 @@ public class GetUserItemsTest {
     assertEquals("https://si0.twimg.com/profile_images/2309761038/1ijg13pfs0dg84sk2y0h_normal", user.getProfileImageUrl());
     assertEquals("てすと", infos[0].getTitle());
     assertEquals("<p>foooooooooooooooo</p>\n", infos[0].getBody());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), infos[0].getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), infos[0].getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), infos[0].getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), infos[0].getUpdatedAt());
     assertEquals("18 hours ago", infos[0].getCreatedAtInWords());
     assertEquals("18 hours ago", infos[0].getUpdatedAtInWords());
     Tag[] tags = infos[0].getTags();
@@ -59,7 +58,7 @@ public class GetUserItemsTest {
   public void 特定ユーザーの投稿取得成功_複数件(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "ItemInfos.json");
     QiitaClient client = new QiitaClient();
-    ItemInfo[] infos = client.getUserItems("yaotti");
+    ItemInfo[] infos = client.getUserItems("yaotti").getContents();
     assertEquals(3, infos.length);
     
     assertEquals(1, infos[0].getId());
@@ -70,8 +69,8 @@ public class GetUserItemsTest {
     assertEquals("https://si0.twimg.com/profile_images/dummy_url1", user1.getProfileImageUrl());
     assertEquals("てすと1", infos[0].getTitle());
     assertEquals("<p>foooooooooooooooo1</p>\n", infos[0].getBody());
-    assertEquals(DateTimeUtil.parse("2012-09-01 01:02:03 +0900"), infos[0].getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-09-02 04:05:06 +0900"), infos[0].getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-09-01 01:02:03 +0900"), infos[0].getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-09-02 04:05:06 +0900"), infos[0].getUpdatedAt());
     assertEquals("1 hours ago", infos[0].getCreatedAtInWords());
     assertEquals("1 hours ago", infos[0].getUpdatedAtInWords());
     Tag[] tags1 = infos[0].getTags();
@@ -99,8 +98,8 @@ public class GetUserItemsTest {
     assertEquals("https://si0.twimg.com/profile_images/dummy_url2", user2.getProfileImageUrl());
     assertEquals("てすと2", infos[1].getTitle());
     assertEquals("<p>foooooooooooooooo2</p>\n", infos[1].getBody());
-    assertEquals(DateTimeUtil.parse("2012-10-01 01:02:03 +0900"), infos[1].getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-10-02 04:05:06 +0900"), infos[1].getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-01 01:02:03 +0900"), infos[1].getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-02 04:05:06 +0900"), infos[1].getUpdatedAt());
     assertEquals("2 hours ago", infos[1].getCreatedAtInWords());
     assertEquals("2 hours ago", infos[1].getUpdatedAtInWords());
     Tag[] tags2 = infos[1].getTags();
@@ -128,8 +127,8 @@ public class GetUserItemsTest {
     assertEquals("https://si0.twimg.com/profile_images/dummy_url3", user3.getProfileImageUrl());
     assertEquals("てすと3", infos[2].getTitle());
     assertEquals("<p>foooooooooooooooo3</p>\n", infos[2].getBody());
-    assertEquals(DateTimeUtil.parse("2012-11-01 01:02:03 +0900"), infos[2].getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-11-02 04:05:06 +0900"), infos[2].getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-11-01 01:02:03 +0900"), infos[2].getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-11-02 04:05:06 +0900"), infos[2].getUpdatedAt());
     assertEquals("3 hours ago", infos[2].getCreatedAtInWords());
     assertEquals("3 hours ago", infos[2].getUpdatedAtInWords());
     Tag[] tags3 = infos[2].getTags();

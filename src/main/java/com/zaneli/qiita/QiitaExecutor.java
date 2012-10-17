@@ -11,9 +11,12 @@ import static org.apache.http.HttpStatus.SC_OK;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +24,7 @@ import java.util.Map.Entry;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -37,13 +41,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.zaneli.qiita.model.response.Error;
+import com.zaneli.qiita.model.response.PageableResponse;
 import com.zaneli.qiita.model.response.QiitaResponse;
 
-class QiitaExecutor {
+public class QiitaExecutor {
 
   private static final String ENDPOINT_URL = "https://qiita.com/api/v1";
 
   private String token;
+
+  private int perPage = 20;
 
   QiitaExecutor() {
   }
@@ -52,11 +59,15 @@ class QiitaExecutor {
     this.token = token;
   }
 
-  <T extends QiitaResponse> T getSingleContent(String apiPath, Class<T> responseType) throws IOException, QiitaException {
-    return getSingleContent(apiPath, Collections.<String, String>emptyMap(), responseType);
+  public void setPerPage(int perPage) {
+    this.perPage = perPage;
   }
 
-  <T extends QiitaResponse> T getSingleContent(
+  <T extends QiitaResponse> T getContent(String apiPath, Class<T> responseType) throws IOException, QiitaException {
+    return getContent(apiPath, Collections.<String, String>emptyMap(), responseType);
+  }
+
+  <T extends QiitaResponse> T getContent(
       String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
     HttpGet request = new HttpGet(createQuery(createUrl(apiPath, token), params));
     HttpResponse response = execute(request);
@@ -67,18 +78,30 @@ class QiitaExecutor {
     }
   }
 
-  <T extends QiitaResponse> T[] getMultiContents(String apiPath, Class<T[]> responseType) throws IOException, QiitaException {
-    return getMultiContents(apiPath, Collections.<String, String>emptyMap(), responseType);
+  <T extends QiitaResponse> PageableResponse<T> getPageableContents(
+      String apiPath, Class<T[]> responseType) throws IOException, QiitaException {
+    return getPageableContents(apiPath, new HashMap<String, String>(), responseType);
   }
 
-  <T extends QiitaResponse> T[] getMultiContents(
+  <T extends QiitaResponse> PageableResponse<T> getPageableContents(
       String apiPath, Map<String, String> params, Class<T[]> responseType) throws IOException, QiitaException {
-    HttpGet request = new HttpGet(createQuery(createUrl(apiPath, token), params));
+    params.put("per_page", Integer.toString(perPage));
+    try {
+      return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), params, responseType);
+    } catch (URISyntaxException e) {
+      throw new QiitaException(e);
+    }
+  }
+
+  public <T extends QiitaResponse> PageableResponse<T> getPageableContents(
+      URI uri, Map<String, String> params, Class<T[]> responseType) throws IOException, QiitaException {
+    HttpGet request = new HttpGet(uri);
     HttpResponse response = execute(request);
     verifyStatusCode(response, SC_OK);
+    String[] linkHeaderValues = getHeaderValues(response.getHeaders("Link"));
     try (InputStream in = response.getEntity().getContent()) {
       T[] res = JSON.decode(in, responseType);
-      return res;
+      return new PageableResponse<T>(this, params, res, linkHeaderValues);
     }
   }
 
@@ -184,5 +207,13 @@ class QiitaExecutor {
       return ENDPOINT_URL + '/' + apiPath;
     }
     return ENDPOINT_URL + '/' + apiPath + "?token=" + token;
+  }
+
+  private static String[] getHeaderValues(Header[] headers) {
+    List<String> values = new ArrayList<>();
+    for (Header header : headers) {
+      values.add(header.getValue());
+    }
+    return values.toArray(new String[headers.length]);
   }
 }

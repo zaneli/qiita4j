@@ -1,14 +1,14 @@
 package com.zaneli.qiita.model.response;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.zaneli.qiita.util.DateTimeUtil;
 
 @SuppressWarnings("serial")
 public class ItemInfo extends QiitaResponse {
@@ -76,7 +76,7 @@ public class ItemInfo extends QiitaResponse {
   }
 
   public void setCreatedAt(String createdAt) throws ParseException {
-    this.createdAt = DateTimeUtil.parse(createdAt);
+    this.createdAt = parse(createdAt);
   }
 
   public Date getUpdatedAt() {
@@ -84,7 +84,7 @@ public class ItemInfo extends QiitaResponse {
   }
 
   public void setUpdatedAt(String updatedAt) throws ParseException {
-    this.updatedAt = DateTimeUtil.parse(updatedAt);
+    this.updatedAt = parse(updatedAt);
   }
 
   public String getCreatedAtInWords() {
@@ -219,5 +219,19 @@ public class ItemInfo extends QiitaResponse {
     public int hashCode() {
       return HashCodeBuilder.reflectionHashCode(this);
     }
+  }
+
+
+  private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    @Override
+    protected DateFormat initialValue() {
+      DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss +0900");
+      dateFormat.setLenient(false);
+      return dateFormat;
+    }
+  };
+
+  private static Date parse(String dateString) throws ParseException {
+    return DATE_FORMAT.get().parse(dateString);
   }
 }

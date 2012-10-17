@@ -15,7 +15,6 @@ import com.zaneli.qiita.model.request.ItemRequest;
 import com.zaneli.qiita.model.response.ItemInfo;
 import com.zaneli.qiita.model.response.User;
 import com.zaneli.qiita.model.response.ItemInfo.Tag;
-import com.zaneli.qiita.util.DateTimeUtil;
 
 public class UpdateItemTest {
 
@@ -35,8 +34,8 @@ public class UpdateItemTest {
     assertEquals("https://si0.twimg.com/profile_images/2309761038/1ijg13pfs0dg84sk2y0h_normal", user.getProfileImageUrl());
     assertEquals("てすと", info.getTitle());
     assertEquals("<p>foooooooooooooooo</p>\n", info.getBody());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), info.getCreatedAt());
-    assertEquals(DateTimeUtil.parse("2012-10-03 22:12:36 +0900"), info.getUpdatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), info.getCreatedAt());
+    assertEquals(QiitaClientTestUtil.parse("2012-10-03 22:12:36 +0900"), info.getUpdatedAt());
     assertEquals("18 hours ago", info.getCreatedAtInWords());
     assertEquals("18 hours ago", info.getUpdatedAtInWords());
     Tag[] tags = info.getTags();

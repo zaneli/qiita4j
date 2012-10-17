@@ -19,7 +19,7 @@ public class GetFollowingUsersTest {
   public void 特定ユーザーのフォローしているユーザー取得成功_1件(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "User.json");
     QiitaClient client = new QiitaClient();
-    User[] users = client.getFollowingUsers(USER_NAME);
+    User[] users = client.getFollowingUsers(USER_NAME).getContents();
     assertEquals(1, users.length);
     assertEquals("Hiroshige Umino", users[0].getName());
     assertEquals("yaotti", users[0].getUrlName());
@@ -30,7 +30,7 @@ public class GetFollowingUsersTest {
   public void 特定ユーザーのフォローしているユーザー取得成功_複数件(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "Users.json");
     QiitaClient client = new QiitaClient();
-    User[] users = client.getFollowingUsers(USER_NAME);
+    User[] users = client.getFollowingUsers(USER_NAME).getContents();
     assertEquals(3, users.length);
 
     assertEquals("Dummy User1", users[0].getName());

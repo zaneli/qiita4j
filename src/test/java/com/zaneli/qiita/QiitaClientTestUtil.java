@@ -2,6 +2,10 @@ package com.zaneli.qiita;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import mockit.Deencapsulation;
 import mockit.NonStrictExpectations;
@@ -13,6 +17,19 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpRequestBase;
 
 public abstract class QiitaClientTestUtil {
+
+  private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    @Override
+    protected DateFormat initialValue() {
+      DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss +0900");
+      dateFormat.setLenient(false);
+      return dateFormat;
+    }
+  };
+
+  static Date parse(String dateString) throws ParseException {
+    return DATE_FORMAT.get().parse(dateString);
+  }
 
   static void configureMock(
       final QiitaExecutor executor,

@@ -19,7 +19,7 @@ public class GetFollowingTagsTest {
   public void 特定ユーザーのフォローしているタグ取得成功_1件(@Mocked("execute") final QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "TagInfo.json");
     QiitaClient client = new QiitaClient();
-    TagInfo[] infos = client.getFollowingTags("yaotti");
+    TagInfo[] infos = client.getFollowingTags("yaotti").getContents();
     assertEquals(1, infos.length);
     assertEquals("c#", infos[0].getName());
     assertEquals("C%23", infos[0].getUrlName());
@@ -33,7 +33,7 @@ public class GetFollowingTagsTest {
   public void 特定ユーザーのフォローしているタグ取得成功_複数件(@Mocked("execute") QiitaExecutor executor) throws Exception {
     QiitaClientTestUtil.configureMock(executor, SC_OK, "TagInfos.json");
     QiitaClient client = new QiitaClient();
-    TagInfo[] infos = client.getFollowingTags("yaotti");
+    TagInfo[] infos = client.getFollowingTags("yaotti").getContents();
     assertEquals(3, infos.length);
 
     assertEquals("Java", infos[0].getName());
