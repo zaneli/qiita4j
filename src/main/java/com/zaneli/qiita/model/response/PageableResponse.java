@@ -23,6 +23,9 @@ public class PageableResponse<T extends QiitaResponse> implements Serializable {
     private Rel(String value) {
       this.value = value;
     }
+    String getValue() {
+        return value;
+    }
   }
 
   private final QiitaExecutor executor;
@@ -52,34 +55,34 @@ public class PageableResponse<T extends QiitaResponse> implements Serializable {
 
   public PageableResponse<T> getFirst() throws IOException, QiitaException {
     if (firstUri == null) {
-      return new NullPageableResponse<T>(responseType, contents);
+      return new NullPageableResponse<>(responseType);
     }
     return executor.getPageableContents(firstUri, params, responseType);
   }
 
   public PageableResponse<T> getPrev() throws IOException, QiitaException {
     if (prevUri == null) {
-      return new NullPageableResponse<T>(responseType, contents);
+      return new NullPageableResponse<>(responseType);
     }
     return executor.getPageableContents(prevUri, params, responseType);
   }
 
   public PageableResponse<T> getNext() throws IOException, QiitaException {
     if (nextUri == null) {
-      return new NullPageableResponse<T>(responseType, contents);
+      return new NullPageableResponse<>(responseType);
     }
     return executor.getPageableContents(nextUri, params, responseType);
   }
 
   public PageableResponse<T> getLast() throws IOException, QiitaException {
     if (lastUri == null) {
-      return new NullPageableResponse<T>(responseType, contents);
+      return new NullPageableResponse<>(responseType);
     }
     return executor.getPageableContents(lastUri, params, responseType);
   }
 
   private static URI retrieveUri(Rel rel, String[] linkHeaderValues) throws QiitaException {
-    Pattern pattern = Pattern.compile("^<(.+)>;\\s+rel=\"" + rel.value + "\"$");
+    Pattern pattern = Pattern.compile("^<(.+)>;\\s+rel=\"" + rel.getValue() + "\"$");
     for (String linkHeaderValue : linkHeaderValues) {
       String[] splitedLinkHeaderValues = linkHeaderValue.split(",");
       for (String splitedLinkHeaderValue : splitedLinkHeaderValues) {
@@ -99,7 +102,7 @@ public class PageableResponse<T extends QiitaResponse> implements Serializable {
   private static class NullPageableResponse<T extends QiitaResponse> extends PageableResponse<T> {
     private final T[] emptyContent;
     @SuppressWarnings("unchecked")
-    private NullPageableResponse(Class<T> responseType, T[] orgContents) throws QiitaException {
+    NullPageableResponse(Class<T> responseType) throws QiitaException {
       super(null, Collections.<String, String>emptyMap(), responseType, null, new String[0]);
       this.emptyContent = (T[]) Array.newInstance(responseType, 0);
     }

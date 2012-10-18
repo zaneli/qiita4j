@@ -37,6 +37,7 @@ public abstract class QiitaClientTestUtil {
     configureMock(executor, statusCode, null);
   }
 
+  @SuppressWarnings({ "resource", "unused" })
   static void configureMock(
       final QiitaExecutor executor,
       final int statusCode,
@@ -65,7 +66,7 @@ public abstract class QiitaClientTestUtil {
       }
       {
         mockStatusLine.getStatusCode();
-        returns(statusCode);
+        returns(Integer.valueOf(statusCode));
       }
       {
         mockEntity.getContent();

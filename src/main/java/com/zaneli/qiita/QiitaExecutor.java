@@ -103,7 +103,7 @@ public class QiitaExecutor {
     try (InputStream in = response.getEntity().getContent()) {
       @SuppressWarnings("unchecked")
       T[] contents = JSON.decode(in, (Class<T[]>) Array.newInstance(responseType, 0).getClass());
-      return new PageableResponse<T>(this, params, responseType, contents, linkHeaderValues);
+      return new PageableResponse<>(this, params, responseType, contents, linkHeaderValues);
     }
   }
 
