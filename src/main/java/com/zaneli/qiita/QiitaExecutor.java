@@ -88,14 +88,14 @@ public class QiitaExecutor {
       String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
     params.put("per_page", Integer.toString(perPage));
     try {
-      return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), params, responseType);
+      return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), responseType);
     } catch (URISyntaxException e) {
       throw new QiitaException(e);
     }
   }
 
   public <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      URI uri, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
+      URI uri, Class<T> responseType) throws IOException, QiitaException {
     HttpGet request = new HttpGet(uri);
     HttpResponse response = execute(request);
     verifyStatusCode(response, SC_OK);
@@ -103,7 +103,7 @@ public class QiitaExecutor {
     try (InputStream in = response.getEntity().getContent()) {
       @SuppressWarnings("unchecked")
       T[] contents = JSON.decode(in, (Class<T[]>) Array.newInstance(responseType, 0).getClass());
-      return new PageableResponse<>(this, params, responseType, contents, linkHeaderValues);
+      return new PageableResponse<>(this, responseType, contents, linkHeaderValues);
     }
   }
 
