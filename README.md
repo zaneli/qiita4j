@@ -62,14 +62,16 @@ QiitaClient のメソッドを使用して実行します。
 ### 取得件数の指定
 `client.setPerPage(50);`  
 ### ページング
-`PageableResponse<ItemInfo> firstPage = userItems.getFirst();`  
+`PageableResponse<ItemInfo> userItemsPage = client.getUserItems(<ユーザー名>);`  
+
+`PageableResponse<ItemInfo> firstPage = userItemsPage.getFirst();`  
 `ItemInfo[] firstItems = firstPage.getContents();`  
 
-`PageableResponse<ItemInfo> prevPage = userItems.getPrev();`  
+`PageableResponse<ItemInfo> prevPage = userItemsPage.getPrev();`  
 `ItemInfo[] prevItems = prevPage.getContents();`  
 
-`PageableResponse<ItemInfo> nextPage = userItems.getNext();`  
+`PageableResponse<ItemInfo> nextPage = userItemsPage.getNext();`  
 `ItemInfo[] nextItems = nextPage.getContents();`  
 
-`PageableResponse<ItemInfo> lastPage = userItems.getLast();`  
+`PageableResponse<ItemInfo> lastPage = userItemsPage.getLast();`  
 `ItemInfo[] lastItems = lastPage.getContents();`  
