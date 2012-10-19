@@ -9,55 +9,55 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @SuppressWarnings("serial")
 public class Tag implements Serializable {
 
-  private String name;
-  private String urlName;
-  private String iconUrl;
-  private String[] versions;
+    private String name;
+    private String urlName;
+    private String iconUrl;
+    private String[] versions;
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public String getUrlName() {
-    return urlName;
-  }
+    public String getUrlName() {
+        return urlName;
+    }
 
-  public void setUrlName(String urlName) {
-    this.urlName = urlName;
-  }
+    public void setUrlName(String urlName) {
+        this.urlName = urlName;
+    }
 
-  public String getIconUrl() {
-    return iconUrl;
-  }
+    public String getIconUrl() {
+        return iconUrl;
+    }
 
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
 
-  public String[] getVersions() {
-    return versions;
-  }
+    public String[] getVersions() {
+        return versions;
+    }
 
-  public void setVersions(String[] versions) {
-    this.versions = versions;
-  }
+    public void setVersions(String[] versions) {
+        this.versions = versions;
+    }
 
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this);
-  }
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
-  }
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-  @Override
-  public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
-  }
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 }

@@ -18,60 +18,56 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 public abstract class QiitaClientTestUtil {
 
-  private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
-    @Override
-    protected DateFormat initialValue() {
-      DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss +0900");
-      dateFormat.setLenient(false);
-      return dateFormat;
-    }
-  };
-
-  static Date parse(String dateString) throws ParseException {
-    return DATE_FORMAT.get().parse(dateString);
-  }
-
-  static void configureMock(
-      final QiitaExecutor executor,
-      final int statusCode) throws IOException {
-    configureMock(executor, statusCode, null);
-  }
-
-  @SuppressWarnings({ "resource", "unused" })
-  static void configureMock(
-      final QiitaExecutor executor,
-      final int statusCode,
-      String contentFileName) throws IOException {
-    final InputStream content;
-    if (StringUtils.isEmpty(contentFileName)) {
-      content = null;
-    } else {
-      content = QiitaClientTestUtil.class.getResourceAsStream(contentFileName);
-    }
-    new NonStrictExpectations() {
-      HttpResponse mockResponse;
-      StatusLine mockStatusLine;
-      HttpEntity mockEntity;
-      {
-        Deencapsulation.invoke(executor, "execute", withAny(HttpRequestBase.class));
-        returns(mockResponse);
-      }
-      {
-        mockResponse.getEntity();
-        returns(mockEntity);
-      }
-      {
-        mockResponse.getStatusLine();
-        returns(mockStatusLine);
-      }
-      {
-        mockStatusLine.getStatusCode();
-        returns(Integer.valueOf(statusCode));
-      }
-      {
-        mockEntity.getContent();
-        returns(content);
-      }
+    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss +0900");
+            dateFormat.setLenient(false);
+            return dateFormat;
+        }
     };
-  }
+
+    static Date parse(String dateString) throws ParseException {
+        return DATE_FORMAT.get().parse(dateString);
+    }
+
+    static void configureMock(final QiitaExecutor executor, final int statusCode) throws IOException {
+        configureMock(executor, statusCode, null);
+    }
+
+    @SuppressWarnings({ "resource", "unused" })
+    static void configureMock(
+            final QiitaExecutor executor, final int statusCode, String contentFileName) throws IOException {
+        final InputStream content;
+        if (StringUtils.isEmpty(contentFileName)) {
+            content = null;
+        } else {
+            content = QiitaClientTestUtil.class.getResourceAsStream(contentFileName);
+        }
+        new NonStrictExpectations() {
+            HttpResponse mockResponse;
+            StatusLine mockStatusLine;
+            HttpEntity mockEntity;
+            {
+                Deencapsulation.invoke(executor, "execute", withAny(HttpRequestBase.class));
+                returns(mockResponse);
+            }
+            {
+                mockResponse.getEntity();
+                returns(mockEntity);
+            }
+            {
+                mockResponse.getStatusLine();
+                returns(mockStatusLine);
+            }
+            {
+                mockStatusLine.getStatusCode();
+                returns(Integer.valueOf(statusCode));
+            }
+            {
+                mockEntity.getContent();
+                returns(content);
+            }
+        };
+    }
 }

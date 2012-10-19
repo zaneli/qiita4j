@@ -47,175 +47,179 @@ import com.zaneli.qiita.model.response.QiitaResponse;
 
 public class QiitaExecutor {
 
-  private static final String ENDPOINT_URL = "https://qiita.com/api/v1";
+    private static final String ENDPOINT_URL = "https://qiita.com/api/v1";
 
-  private String token;
+    private String token;
 
-  private int perPage = 20;
+    private int perPage = 20;
 
-  QiitaExecutor() {
-  }
-
-  void setToken(String token) {
-    this.token = token;
-  }
-
-  void setPerPage(int perPage) {
-    this.perPage = perPage;
-  }
-
-  <T extends QiitaResponse> T getContent(String apiPath, Class<T> responseType) throws IOException, QiitaException {
-    return getContent(apiPath, Collections.<String, String>emptyMap(), responseType);
-  }
-
-  <T extends QiitaResponse> T getContent(
-      String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
-    HttpGet request = new HttpGet(createQuery(createUrl(apiPath, token), params));
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_OK);
-    try (InputStream in = response.getEntity().getContent()) {
-      T res = JSON.decode(in, responseType);
-      return res;
+    QiitaExecutor() {
     }
-  }
 
-  <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      String apiPath, Class<T> responseType) throws IOException, QiitaException {
-    return getPageableContents(apiPath, new HashMap<String, String>(), responseType);
-  }
-
-  <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
-    params.put("per_page", Integer.toString(perPage));
-    try {
-      return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), responseType);
-    } catch (URISyntaxException e) {
-      throw new QiitaException(e);
+    void setToken(String token) {
+        this.token = token;
     }
-  }
 
-  public <T extends QiitaResponse> PageableResponse<T> getPageableContents(
-      URI uri, Class<T> responseType) throws IOException, QiitaException {
-    HttpGet request = new HttpGet(uri);
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_OK);
-    String[] linkHeaderValues = getHeaderValues(response.getHeaders("Link"));
-    try (InputStream in = response.getEntity().getContent()) {
-      @SuppressWarnings("unchecked")
-      T[] contents = JSON.decode(in, (Class<T[]>) Array.newInstance(responseType, 0).getClass());
-      return new PageableResponse<>(this, responseType, contents, linkHeaderValues);
+    void setPerPage(int perPage) {
+        this.perPage = perPage;
     }
-  }
 
-  <T extends QiitaResponse> T postFormValue(
-      String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
-    HttpPost request = new HttpPost(createUrl(apiPath, token));
-    setFormValue(request, params);
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_OK);
-    try (InputStream in = response.getEntity().getContent()) {
-      T res = JSON.decode(in, responseType);
-      return res;
+    <T extends QiitaResponse> T getContent(String apiPath, Class<T> responseType) throws IOException, QiitaException {
+        return getContent(apiPath, Collections.<String, String> emptyMap(), responseType);
     }
-  }
 
-  <T extends QiitaResponse> T postBody(String apiPath, String body, Class<T> responseType) throws IOException, QiitaException {
-    HttpPost request = new HttpPost(createUrl(apiPath, token));
-    setBody(request, body);
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_CREATED);
-    try (InputStream in = response.getEntity().getContent()) {
-      return JSON.decode(in, responseType);
+    <T extends QiitaResponse> T getContent(
+            String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
+        HttpGet request = new HttpGet(createQuery(createUrl(apiPath, token), params));
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_OK);
+        try (InputStream in = response.getEntity().getContent()) {
+            T res = JSON.decode(in, responseType);
+            return res;
+        }
     }
-  }
 
-  <T extends QiitaResponse> T putBody(String apiPath, String body, Class<T> responseType) throws IOException, QiitaException {
-    HttpPut request = new HttpPut(createUrl(apiPath, token));
-    setBody(request, body);
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_OK);
-    try (InputStream in = response.getEntity().getContent()) {
-      return JSON.decode(in, responseType);
+    <T extends QiitaResponse> PageableResponse<T> getPageableContents(
+            String apiPath, Class<T> responseType) throws IOException, QiitaException {
+        return getPageableContents(apiPath, new HashMap<String, String>(), responseType);
     }
-  }
 
-  void putNoContent(String apiPath) throws IOException, QiitaException {
-    HttpRequestBase request = new HttpPut(createUrl(apiPath, token));
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_NO_CONTENT);
-  }
-
-  void deleteNoContent(String apiPath) throws IOException, QiitaException {
-    HttpRequestBase request = new HttpDelete(createUrl(apiPath, token));
-    HttpResponse response = execute(request);
-    verifyStatusCode(response, SC_NO_CONTENT);
-  }
-
-  private String createQuery(String url, Map<String, String> params) throws QiitaException {
-    StringBuilder sb = new StringBuilder(url);
-    if (url.contains("?")) {
-      sb.append('&');
-    } else {
-      sb.append('?');
+    <T extends QiitaResponse> PageableResponse<T> getPageableContents(
+            String apiPath, Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
+        params.put("per_page", Integer.toString(perPage));
+        try {
+            return getPageableContents(new URI(createQuery(createUrl(apiPath, token), params)), responseType);
+        } catch (URISyntaxException e) {
+            throw new QiitaException(e);
+        }
     }
-    try {
-      for (Entry<String, String> entry : params.entrySet()) {
-        String key = URLEncoder.encode(entry.getKey(), UTF_8.name());
-        String value = URLEncoder.encode(entry.getValue(), UTF_8.name());
-        sb.append(key).append('=').append(value).append('&');
-      }
-    } catch (UnsupportedEncodingException e) {
-      throw new QiitaException(e);
-    }
-    return sb.delete(sb.length() - 1, sb.length()).toString();
-  }
 
-  private void setFormValue(HttpEntityEnclosingRequestBase request, Map<String, String> params) throws QiitaException {
-    List<NameValuePair> nameValuePairs = new ArrayList<>();
-    for (Entry<String, String> entry : params.entrySet()) {
-      nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+    public <T extends QiitaResponse> PageableResponse<T> getPageableContents(
+            URI uri, Class<T> responseType) throws IOException, QiitaException {
+        HttpGet request = new HttpGet(uri);
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_OK);
+        String[] linkHeaderValues = getHeaderValues(response.getHeaders("Link"));
+        try (InputStream in = response.getEntity().getContent()) {
+            @SuppressWarnings("unchecked")
+            T[] contents = JSON.decode(in, (Class<T[]>) Array.newInstance(responseType, 0).getClass());
+            return new PageableResponse<>(this, responseType, contents, linkHeaderValues);
+        }
     }
-    try {
-      request.setEntity(new UrlEncodedFormEntity(nameValuePairs, UTF_8.name()));
-    } catch (UnsupportedEncodingException e) {
-      throw new QiitaException(e);
-    }
-  }
 
-  private void setBody(HttpEntityEnclosingRequestBase request, String body) {
-    request.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
-  }
-
-  private HttpResponse execute(HttpRequestBase request) throws IOException {
-    HttpClient httpClient = new DefaultHttpClient();
-    return httpClient.execute(request);
-  }
-
-  private static void verifyStatusCode(HttpResponse response, int expectedStatusCode) throws IOException, QiitaException {
-    int statusCode = response.getStatusLine().getStatusCode();
-    if (statusCode == SC_BAD_REQUEST || statusCode == SC_FORBIDDEN || statusCode == SC_NOT_FOUND) {
-      try (InputStream in = response.getEntity().getContent()) {
-        Error res = JSON.decode(in, Error.class);
-        throw new QiitaException(res.getError());
-      }
+    <T extends QiitaResponse> T postFormValue(String apiPath,
+            Map<String, String> params, Class<T> responseType) throws IOException, QiitaException {
+        HttpPost request = new HttpPost(createUrl(apiPath, token));
+        setFormValue(request, params);
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_OK);
+        try (InputStream in = response.getEntity().getContent()) {
+            T res = JSON.decode(in, responseType);
+            return res;
+        }
     }
-    if (statusCode != expectedStatusCode) {
-      throw new IllegalArgumentException("unexpected status code:" + statusCode);
-    }
-  }
 
-  private static String createUrl(String apiPath, String token) {
-    if (StringUtils.isEmpty(token)) {
-      return ENDPOINT_URL + '/' + apiPath;
+    <T extends QiitaResponse> T postBody(
+            String apiPath, String body, Class<T> responseType) throws IOException, QiitaException {
+        HttpPost request = new HttpPost(createUrl(apiPath, token));
+        setBody(request, body);
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_CREATED);
+        try (InputStream in = response.getEntity().getContent()) {
+            return JSON.decode(in, responseType);
+        }
     }
-    return ENDPOINT_URL + '/' + apiPath + "?token=" + token;
-  }
 
-  private static String[] getHeaderValues(Header[] headers) {
-    List<String> values = new ArrayList<>();
-    for (Header header : headers) {
-      values.add(header.getValue());
+    <T extends QiitaResponse> T putBody(
+            String apiPath, String body, Class<T> responseType) throws IOException, QiitaException {
+        HttpPut request = new HttpPut(createUrl(apiPath, token));
+        setBody(request, body);
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_OK);
+        try (InputStream in = response.getEntity().getContent()) {
+            return JSON.decode(in, responseType);
+        }
     }
-    return values.toArray(new String[headers.length]);
-  }
+
+    void putNoContent(String apiPath) throws IOException, QiitaException {
+        HttpRequestBase request = new HttpPut(createUrl(apiPath, token));
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_NO_CONTENT);
+    }
+
+    void deleteNoContent(String apiPath) throws IOException, QiitaException {
+        HttpRequestBase request = new HttpDelete(createUrl(apiPath, token));
+        HttpResponse response = execute(request);
+        verifyStatusCode(response, SC_NO_CONTENT);
+    }
+
+    private String createQuery(String url, Map<String, String> params) throws QiitaException {
+        StringBuilder sb = new StringBuilder(url);
+        if (url.contains("?")) {
+            sb.append('&');
+        } else {
+            sb.append('?');
+        }
+        try {
+            for (Entry<String, String> entry : params.entrySet()) {
+                String key = URLEncoder.encode(entry.getKey(), UTF_8.name());
+                String value = URLEncoder.encode(entry.getValue(), UTF_8.name());
+                sb.append(key).append('=').append(value).append('&');
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new QiitaException(e);
+        }
+        return sb.delete(sb.length() - 1, sb.length()).toString();
+    }
+
+    private void setFormValue(
+            HttpEntityEnclosingRequestBase request, Map<String, String> params) throws QiitaException {
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        for (Entry<String, String> entry : params.entrySet()) {
+            nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        try {
+            request.setEntity(new UrlEncodedFormEntity(nameValuePairs, UTF_8.name()));
+        } catch (UnsupportedEncodingException e) {
+            throw new QiitaException(e);
+        }
+    }
+
+    private void setBody(HttpEntityEnclosingRequestBase request, String body) {
+        request.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+    }
+
+    private HttpResponse execute(HttpRequestBase request) throws IOException {
+        HttpClient httpClient = new DefaultHttpClient();
+        return httpClient.execute(request);
+    }
+
+    private static void verifyStatusCode(
+            HttpResponse response, int expectedStatusCode) throws IOException, QiitaException {
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == SC_BAD_REQUEST || statusCode == SC_FORBIDDEN || statusCode == SC_NOT_FOUND) {
+            try (InputStream in = response.getEntity().getContent()) {
+                Error res = JSON.decode(in, Error.class);
+                throw new QiitaException(res.getError());
+            }
+        }
+        if (statusCode != expectedStatusCode) {
+            throw new IllegalArgumentException("unexpected status code:" + statusCode);
+        }
+    }
+
+    private static String createUrl(String apiPath, String token) {
+        if (StringUtils.isEmpty(token)) {
+            return ENDPOINT_URL + '/' + apiPath;
+        }
+        return ENDPOINT_URL + '/' + apiPath + "?token=" + token;
+    }
+
+    private static String[] getHeaderValues(Header[] headers) {
+        List<String> values = new ArrayList<>();
+        for (Header header : headers) {
+            values.add(header.getValue());
+        }
+        return values.toArray(new String[headers.length]);
+    }
 }

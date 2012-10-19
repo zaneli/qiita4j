@@ -11,22 +11,22 @@ import org.junit.Test;
 
 public class DeleteItemTest {
 
-  @Test
-  public void 投稿のストック成功(@Mocked("execute") QiitaExecutor executor) throws Exception {
-    QiitaClientTestUtil.configureMock(executor, SC_NO_CONTENT);
-    QiitaClient client = new QiitaClient();
-    client.deleteItem("test_uuid_0001");
-  }
-
-  @Test
-  public void 投稿のストック失敗(@Mocked("execute") QiitaExecutor executor) throws Exception {
-    QiitaClientTestUtil.configureMock(executor, SC_BAD_REQUEST, "Error.json");
-    QiitaClient client = new QiitaClient();
-    try {
-      client.deleteItem("test_uuid_0001");
-      fail("QiitaException が発生しませんでした。");
-    } catch (QiitaException e) {
-      assertEquals("Mocked error message.", e.getMessage());
+    @Test
+    public void 投稿のストック成功(@Mocked("execute") QiitaExecutor executor) throws Exception {
+        QiitaClientTestUtil.configureMock(executor, SC_NO_CONTENT);
+        QiitaClient client = new QiitaClient();
+        client.deleteItem("test_uuid_0001");
     }
-  }
+
+    @Test
+    public void 投稿のストック失敗(@Mocked("execute") QiitaExecutor executor) throws Exception {
+        QiitaClientTestUtil.configureMock(executor, SC_BAD_REQUEST, "Error.json");
+        QiitaClient client = new QiitaClient();
+        try {
+            client.deleteItem("test_uuid_0001");
+            fail("QiitaException が発生しませんでした。");
+        } catch (QiitaException e) {
+            assertEquals("Mocked error message.", e.getMessage());
+        }
+    }
 }
