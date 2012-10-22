@@ -11,13 +11,38 @@
   <url>http://www.zaneli.com/</url>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <encoding>UTF-8</encoding>
+    <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+    <sourceJavaVersion>1.7</sourceJavaVersion>
+    <targetJavaVersion>1.7</targetJavaVersion>
     <httpcomponents.version>4.2</httpcomponents.version>
     <jsonic.version>1.2.11</jsonic.version>
     <commons-lang3.version>3.1</commons-lang3.version>
     <jmockit.version>0.999.4</jmockit.version>
     <junit.version>4.10</junit.version>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <encoding>${encoding}</encoding>
+          <source>${sourceJavaVersion}</source>
+          <target>${targetJavaVersion}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>com.zaneli</id>
+      <name>Zaneli Repository</name>
+      <url>${repository.url}</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
