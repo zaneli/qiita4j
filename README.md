@@ -1,5 +1,8 @@
 #Qiita4j
 [Qiita API](http://qiita.com/docs "Qiita API document") の Java ラッパーライブラリです。
+
+[![Build Status](https://travis-ci.org/zaneli/qiita4j.png?branch=master)](https://travis-ci.org/zaneli/qiita4j)
+
 ## トークンの取得
     QiitaClient client = new QiitaClient();
     TokenInfo tokenInfo = client.authorize(new AuthRequest(<ユーザー名>, <パスワード>));
